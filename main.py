@@ -17,8 +17,6 @@ intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents)
 tree = bot.tree
 
-SOURCE_CHANNEL_ID = 1353362211694706749
-
 # 許可ロールの管理
 allowed_roles = {}
 
@@ -69,19 +67,6 @@ async def check_permissions(interaction: discord.Interaction):
       print(f"権限チェックエラー: {e}")
       return False
 
-FORWARD_MAP_FILE = "forward_map.json"
-
-def load_forward_map():
-    if os.path.exists(FORWARD_MAP_FILE):
-        with open(FORWARD_MAP_FILE, "r") as f:
-            return json.load(f)
-    return {}
-
-def save_forward_map(data):
-    with open(FORWARD_MAP_FILE, "w") as f:
-        json.dump(data, f, indent=2)
-
-forward_map = load_forward_map()
 
 @bot.event
 async def on_ready():
@@ -279,39 +264,6 @@ async def delete_message(interaction: discord.Interaction, amount: int):
         await interaction.response.send_message("メッセージを削除する権限がありません", ephemeral=True)
     except discord.HTTPException as e:
         await interaction.response.send_message(f"メッセージの削除中にエラーが発生しました: {e}", ephemeral=True)
-
-@tree.command(name="corebot_update", description="アップデート情報フォローチャンネルを登録及び解除します")
-@app_commands.describe(channel="転送先のチャンネル")
-async def corebot_update(interaction: discord.Interaction, channel: discord.TextChannel):
-    guild_id_str = str(interaction.guild_id)
-    current = forward_map.get(guild_id_str)
-
-    if current == channel.id:
-        # 登録済みなら解除
-        forward_map.pop(guild_id_str)
-        save_forward_map(forward_map)
-        await interaction.response.send_message(f"{channel.mention} への転送を解除しました。", ephemeral=True)
-    else:
-        # 新規登録または別チャンネルに変更
-        forward_map[guild_id_str] = channel.id
-        save_forward_map(forward_map)
-        await interaction.response.send_message(f"{channel.mention} を転送先に設定しました！", ephemeral=True)
-
-@bot.event
-async def on_message(message):
-    if message.author.bot:
-        return
-    print(f"メッセージ受信: {message.content} チャンネルID: {message.channel.id}")
-
-    if message.channel.id == SOURCE_CHANNEL_ID:
-        print("転送処理開始")
-        for guild_id, channel_id in forward_map.items():
-            dest = bot.get_channel(channel_id)
-            print(f"転送先チャンネル: {dest}")
-            if dest:
-                await dest.send(f"【CoreBot更新】\n{message.content}")
-
-    await bot.process_commands(message)
 
 @bot.tree.command(name="support", description="サポートサーバーの招待リンクを表示します")
 async def support(interaction: discord.Interaction):

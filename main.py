@@ -280,7 +280,7 @@ async def delete_message(interaction: discord.Interaction, amount: int):
     except discord.HTTPException as e:
         await interaction.response.send_message(f"メッセージの削除中にエラーが発生しました: {e}", ephemeral=True)
 
-@tree.command(name="CoreBot_Update", description="アップデート情報フォローチャンネルを登録及び解除します")
+@tree.command(name="coreBot_update", description="アップデート情報フォローチャンネルを登録・解除します")
 @app_commands.describe(channel="転送先のチャンネル")
 async def corebot_update(interaction: discord.Interaction, channel: discord.TextChannel):
     guild_id_str = str(interaction.guild_id)

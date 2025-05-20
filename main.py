@@ -15,6 +15,7 @@ intents = discord.Intents.all()
 
 # Botのインスタンス作成
 bot = commands.Bot(command_prefix="!", intents=intents)
+tree = bot.tree
 
 SOURCE_CHANNEL_ID = 1353362211694706749
 

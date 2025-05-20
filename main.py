@@ -301,46 +301,39 @@ async def on_message(message):
     except Exception as e:
         print(f"on_messageイベントでエラーが発生しました: {e}")
 
-@app_commands.command(name="server_information", description="サーバー情報を表示します。")
-async def server_information(self,interaction: discord.Interaction):
-        guild = interaction.guild
-        members = guild.members
-        bots = [m for m in members if m.bot]
-        users = [m for m in members if not m.bot]
-        online = [m for m in members if m.status != discord.Status.offline]
-        offline = [m for m in members if m.status == discord.Status.offline]
-        
-        # カテゴリーとチャンネル数
-        categories = len(guild.categories)
-        text_channels = len(guild.text_channels)
-        voice_channels = len(guild.voice_channels)
-        total_channels = text_channels + voice_channels
+@bot.tree.command(name="server_information", description="サーバー情報を表示します。")
+async def server_information(interaction: discord.Interaction):
+    guild = interaction.guild
+    members = guild.members
+    bots = [m for m in members if m.bot]
+    users = [m for m in members if not m.bot]
+    online = [m for m in members if m.status != discord.Status.offline]
+    offline = [m for m in members if m.status == discord.Status.offline]
 
-        # サーバー創設日（JSTに変換）
-        jst = pytz.timezone('Asia/Tokyo')
-        created_at_jst = guild.created_at.astimezone(jst).strftime('%Y-%m-%d %H:%M:%S')
+    categories = len(guild.categories)
+    text_channels = len(guild.text_channels)
+    voice_channels = len(guild.voice_channels)
+    total_channels = text_channels + voice_channels
 
-        # 仮のメッセージ数（過疎度計算用）
-        # 実際にはDBやキャッシュでメッセージ数を計測する必要あり（ここでは仮に10とする）
-        daily_message_count = 10
-        max_messages = 200  # 活発なサーバーの基準値（任意で調整）
-        inactivity = max(0, min(100, 100 - int((daily_message_count / max_messages) * 100)))
+    jst = pytz.timezone('Asia/Tokyo')
+    created_at_jst = guild.created_at.astimezone(jst).strftime('%Y-%m-%d %H:%M:%S')
 
-        embed = discord.Embed(
-            title=f"{guild.name} のサーバー情報",
-            color=discord.Color.blue()
-        )
-        embed.set_thumbnail(url=guild.icon.url if guild.icon else discord.Embed.Empty)
-        embed.add_field(name="メンバー数", value=f"ユーザー: {len(users)}\nBot: {len(bots)}", inline=True)
-        embed.add_field(name="ステータス", value=f"オンライン: {len(online)}\nオフライン: {len(offline)}", inline=True)
-        embed.add_field(name="サーバー創設日", value=created_at_jst, inline=False)
-        embed.add_field(name="過疎度", value=f"{inactivity}%", inline=True)
-        embed.add_field(name="カテゴリー数", value=str(categories), inline=True)
-        embed.add_field(name="チャンネル数", value=str(total_channels), inline=True)
+    daily_message_count = 10
+    max_messages = 200
+    inactivity = max(0, min(100, 100 - int((daily_message_count / max_messages) * 100)))
 
-        await interaction.response.send_message(embed=embe)
+    embed = discord.Embed(
+        title=f"{guild.name} のサーバー情報",
+        color=discord.Color.blue()
+    )
+    if guild.icon:
+        embed.set_thumbnail(url=guild.icon.url)
+    embed.add_field(name="メンバー数", value=f"ユーザー: {len(users)}\nBot: {len(bots)}", inline=True)
+    embed.add_field(name="ステータス", value=f"オンライン: {len(online)}\nオフライン: {len(offline)}", inline=True)
+    embed.add_field(name="サーバー創設日", value=created_at_jst, inline=False)
+    embed.add_field(name="過疎度", value=f"{inactivity}%", inline=True)
+    embed.add_field(name="カテゴリー数", value=str(categories), inline=True)
+    embed.add_field(name="チャンネル数", value=str(total_channels), inline=True)
 
-async def setup(bot):
-    await bot.add_cog(ServerInfo(bot))
-
+    await interaction.response.send_message(embed=embe)
 bot.run(TOKEN)

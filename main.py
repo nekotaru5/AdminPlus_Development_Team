@@ -298,13 +298,16 @@ async def corebot_update(interaction: discord.Interaction, channel: discord.Text
         await interaction.response.send_message(f"{channel.mention} を転送先に設定しました！", ephemeral=True)
 
 @bot.event
-async def on_message(message: discord.Message):
+async def on_message(message):
     if message.author.bot:
         return
-    
+    print(f"メッセージ受信: {message.content} チャンネルID: {message.channel.id}")
+
     if message.channel.id == SOURCE_CHANNEL_ID:
+        print("転送処理開始")
         for guild_id, channel_id in forward_map.items():
             dest = bot.get_channel(channel_id)
+            print(f"転送先チャンネル: {dest}")
             if dest:
                 await dest.send(f"【CoreBot更新】\n{message.content}")
 

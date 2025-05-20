@@ -68,6 +68,20 @@ async def check_permissions(interaction: discord.Interaction):
       print(f"権限チェックエラー: {e}")
       return False
 
+FORWARD_MAP_FILE = "forward_map.json"
+
+def load_forward_map():
+    if os.path.exists(FORWARD_MAP_FILE):
+        with open(FORWARD_MAP_FILE, "r") as f:
+            return json.load(f)
+    return {}
+
+def save_forward_map(data):
+    with open(FORWARD_MAP_FILE, "w") as f:
+        json.dump(data, f, indent=2)
+
+forward_map = load_forward_map()
+
 @bot.event
 async def on_ready():
     global allowed_roles, announcement_channels

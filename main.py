@@ -302,7 +302,7 @@ async def on_message(message):
         print(f"on_messageイベントでエラーが発生しました: {e}")
 
 @app_commands.command(name="server_information", description="サーバー情報を表示します。")
-    async def server_information(self, interaction: discord.Interaction):
+    async def server_information(self,interaction: discord.Interaction):
         guild = interaction.guild
         members = guild.members
         bots = [m for m in members if m.bot]

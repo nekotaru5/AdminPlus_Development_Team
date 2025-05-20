@@ -335,5 +335,5 @@ async def server_information(interaction: discord.Interaction):
     embed.add_field(name="カテゴリー数", value=str(categories), inline=True)
     embed.add_field(name="チャンネル数", value=str(total_channels), inline=True)
 
-    await interaction.response.send_message(embed=embe)
+    await interaction.response.send_message(embed=embed)
 bot.run(TOKEN)

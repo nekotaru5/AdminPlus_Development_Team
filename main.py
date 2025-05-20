@@ -19,6 +19,10 @@ intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents)
 tree = bot.tree
 
+class ServerInfo(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
 # 許可ロールの管理
 allowed_roles = {}
 

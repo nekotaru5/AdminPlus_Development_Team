@@ -318,8 +318,8 @@ async def server_information(interaction: discord.Interaction):
     jst = pytz.timezone('Asia/Tokyo')
     created_at_jst = guild.created_at.astimezone(jst).strftime('%Y-%m-%d %H:%M:%S')
 
-    daily_message_count = 1
-    max_messages = 5000
+    daily_message_count = 20
+    max_messages = 200
     inactivity = max(0, min(100, 100 - int((daily_message_count / max_messages) * 100)))
 
     embed = discord.Embed(
@@ -330,7 +330,7 @@ async def server_information(interaction: discord.Interaction):
         embed.set_thumbnail(url=guild.icon.url)
     embed.add_field(name="メンバー数", value=f"ユーザー: {len(users)}\nBot: {len(bots)}", inline=True)
     embed.add_field(name="ステータス", value=f"オンライン: {len(online)}\nオフライン: {len(offline)}", inline=True)
-    embed.add_field(name="サーバー創設日", value=created_at_jst, inline=False)
+    embed.add_field(name="サーバー創設日(JST)", value=created_at_jst, inline=False)
     embed.add_field(name="過疎度", value=f"{inactivity}%", inline=True)
     embed.add_field(name="カテゴリー数", value=str(categories), inline=True)
     embed.add_field(name="チャンネル数", value=str(total_channels), inline=True)

@@ -338,7 +338,7 @@ async def on_message(message):
         embed.add_field(name="カテゴリー数", value=str(categories), inline=True)
         embed.add_field(name="チャンネル数", value=str(total_channels), inline=True)
 
-        await interaction.response.send_message(embed=embed)
+        await interaction.response.send_message(embed=embe)
 
 async def setup(bot):
     await bot.add_cog(ServerInfo(bot))

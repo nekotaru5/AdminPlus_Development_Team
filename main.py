@@ -318,8 +318,8 @@ async def server_information(interaction: discord.Interaction):
     jst = pytz.timezone('Asia/Tokyo')
     created_at_jst = guild.created_at.astimezone(jst).strftime('%Y-%m-%d %H:%M:%S')
 
-    daily_message_count = 10
-    max_messages = 200
+    daily_message_count = 1
+    max_messages = 5000
     inactivity = max(0, min(100, 100 - int((daily_message_count / max_messages) * 100)))
 
     embed = discord.Embed(

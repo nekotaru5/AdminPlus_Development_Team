@@ -279,43 +279,35 @@ async def delete_message(interaction: discord.Interaction, amount: int):
     except discord.HTTPException as e:
         await interaction.response.send_message(f"メッセージの削除中にエラーが発生しました: {e}", ephemeral=True)
 
-@bot.tree.command(name="corebot_update", description="CorebotUpdateチャンネルをフォローします")
-async def corebot_update(interaction: discord.Interaction):
-    if not await check_permissions(interaction):
-        await interaction.response.send_message("このコマンドを実行する権限がありません", ephemeral=True)
+@tree.command(name="CoreBot_Update", description="アップデート情報フォローチャンネルを登録・解除します")
+@app_commands.describe(channel="転送先のチャンネル")
+async def corebot_update(interaction: discord.Interaction, channel: discord.TextChannel):
+    guild_id_str = str(interaction.guild_id)
+    current = forward_map.get(guild_id_str)
+
+    if current == channel.id:
+        # 登録済みなら解除
+        forward_map.pop(guild_id_str)
+        save_forward_map(forward_map)
+        await interaction.response.send_message(f"{channel.mention} への転送を解除しました。", ephemeral=True)
+    else:
+        # 新規登録または別チャンネルに変更
+        forward_map[guild_id_str] = channel.id
+        save_forward_map(forward_map)
+        await interaction.response.send_message(f"{channel.mention} を転送先に設定しました！", ephemeral=True)
+
+@bot.event
+async def on_message(message: discord.Message):
+    if message.author.bot:
         return
+    
+    if message.channel.id == SOURCE_CHANNEL_ID:
+        for guild_id, channel_id in forward_map.items():
+            dest = bot.get_channel(channel_id)
+            if dest:
+                await dest.send(f"【CoreBot更新】\n{message.content}")
 
-    try:
-        if not interaction.guild:
-            await interaction.response.send_message("このコマンドはサーバー内でのみ使用できます", ephemeral=True)
-            return
-
-        corebot_channel_id = 1353362211694706749
-
-        # チャンネルの権限を確認
-        if not isinstance(interaction.channel, discord.TextChannel):
-            await interaction.response.send_message("このコマンドはテキストチャンネルでのみ使用できます", ephemeral=True)
-            return
-
-        channel_permissions = interaction.channel.permissions_for(interaction.guild.me)
-        if not channel_permissions.manage_webhooks:
-            await interaction.response.send_message("Botにwebhookの管理権限がありません", ephemeral=True)
-            return
-
-        # フォローを試行
-        try:
-            await interaction.channel.follow(discord.Object(id=corebot_channel_id))
-            await interaction.response.send_message("CorebotUpdateチャンネルのフォローを開始しました", ephemeral=True)
-        except discord.NotFound:
-            await interaction.response.send_message("フォロー対象のチャンネルが見つかりません", ephemeral=True)
-        except discord.Forbidden:
-            await interaction.response.send_message("フォローに必要な権限がありません", ephemeral=True)
-        except discord.HTTPException as e:
-            await interaction.response.send_message(f"フォローに失敗しました: {str(e)}", ephemeral=True)
-    except Exception as e:
-        print(f"予期せぬエラーが発生しました: {str(e)}")
-        await interaction.response.send_message("予期せぬエラーが発生しました", ephemeral=True)
-
+    await bot.process_commands(message)
 
 @bot.tree.command(name="support", description="サポートサーバーの招待リンクを表示します")
 async def support(interaction: discord.Interaction):

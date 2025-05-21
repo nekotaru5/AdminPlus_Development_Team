@@ -19,6 +19,7 @@ Corebotをご利用いただきありがとうございます。
 
 © 2025 Corebot Support (nekotaru5)
 本Botおよび関連コードのすべての権利は、Corebot Support（nekotaru5）に帰属します。
+https://discord.gg/Yv9uJ32KkT
 
 Terms of Use
 
@@ -41,3 +42,4 @@ If you find bugs or have feature suggestions, don't hesitate to let us know.
 
 © 2025 Corebot Support (nekotaru5)
 All rights reserved by Corebot Support (nekotaru5).
+https://discord.gg/Yv9uJ32KkT

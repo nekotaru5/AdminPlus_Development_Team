@@ -275,7 +275,7 @@ async def message(interaction: discord.Interaction, channel: discord.TextChannel
         return
 
     if by_user:
-        message = f"by {interaction.user.mention}\n{message}"
+        message = f"{message}\n\nby {interaction.user.mention}"
 
     await channel.send(message)
     await interaction.response.send_message("メッセージを送信しました", ephemeral=True)

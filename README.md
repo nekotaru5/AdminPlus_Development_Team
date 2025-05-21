@@ -1,4 +1,4 @@
-#　ご利用にあたって
+ご利用にあたって
 
 Corebotをご利用いただきありがとうございます。
 以下のガイドラインに同意のうえ、ご使用ください。
@@ -14,7 +14,7 @@ Corebotをご利用いただきありがとうございます。
 
 ※Corebot自体の利用（Botを導入して使うこと）は自由です。
 
-#　Terms of Use
+Terms of Use
 
 Thank you for using Corebot.
 You are welcome to use the bot freely, but please respect the following rules:

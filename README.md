@@ -38,6 +38,8 @@ Claiming the bot or its code as your own
 
 
 Feel free to invite and use the bot, but the code remains protected.
+Invite Link:
+https://discord.com/oauth2/authorize?client_id=1352772997974593579&permissions=8&integration_type=0&scope=bot
 
 Feedback is always welcome!
 If you find bugs or have feature suggestions, don't hesitate to let us know.

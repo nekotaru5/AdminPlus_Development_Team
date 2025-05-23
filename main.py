@@ -361,26 +361,6 @@ async def help_command(interaction: discord.Interaction):
     await interaction.response.send_message(embed=embed)  # ← ephemeral=False にする or 削除でOK
 
 @bot.event
-async def on_message(message):
-    try:
-        if message.author.bot or not message.guild:
-            return
-
-        guild_id = str(message.guild.id)
-        if guild_id in announcement_channels and message.channel.id in announcement_channels[guild_id]:
-            try:
-                await message.publish()
-                await message.add_reaction("✅")
-                await message.add_reaction("👍")
-                await message.add_reaction("👎")
-            except discord.errors.Forbidden:
-                print(f"メッセージの公開または反応の追加に失敗しました: 権限不足 (Channel: {message.channel.id})")
-            except Exception as e:
-                print(f"メッセージの処理中にエラーが発生しました: {e}")
-    except Exception as e:
-        print(f"on_messageイベントでエラーが発生しました: {e}")
-
-@bot.event
 async def on_message(message: discord.Message):
     if message.author.bot:
         return
@@ -435,6 +415,28 @@ async def on_message(message: discord.Message):
         await message.channel.send(embed=embed)
 
     await bot.process_commands(message)
+
+
+
+@bot.event
+async def on_message(message):
+    try:
+        if message.author.bot or not message.guild:
+            return
+
+        guild_id = str(message.guild.id)
+        if guild_id in announcement_channels and message.channel.id in announcement_channels[guild_id]:
+            try:
+                await message.publish()
+                await message.add_reaction("✅")
+                await message.add_reaction("👍")
+                await message.add_reaction("👎")
+            except discord.errors.Forbidden:
+                print(f"メッセージの公開または反応の追加に失敗しました: 権限不足 (Channel: {message.channel.id})")
+            except Exception as e:
+                print(f"メッセージの処理中にエラーが発生しました: {e}")
+    except Exception as e:
+        print(f"on_messageイベントでエラーが発生しました: {e}")
 
 
 bot.run(TOKEN)

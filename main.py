@@ -142,7 +142,7 @@ async def delete_whitelist(interaction: discord.Interaction, role: discord.Role)
     else:
         await interaction.response.send_message(f"{role.name} は許可ロールではありません", ephemeral=True)
 
-@bot.tree.command(name="show_whitelist", description="許可ロールを表示します")
+@bot.tree.command(name="whitelist", description="許可ロールを表示します")
 async def show_whitelist(interaction: discord.Interaction):
     try:
         member = await interaction.guild.fetch_member(interaction.user.id)

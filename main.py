@@ -380,4 +380,61 @@ async def on_message(message):
     except Exception as e:
         print(f"on_messageイベントでエラーが発生しました: {e}")
 
+@bot.event
+async def on_message(message: discord.Message):
+    if message.author.bot:
+        return
+
+    if bot.user in message.mentions:
+        embed = discord.Embed(
+            title="コマンド一覧",
+            description="Botで使用できるコマンドの概要です。",
+            color=discord.Color.green()
+        )
+
+        embed.add_field(
+            name="■ 管理者専用",
+            value=(
+                "`/add_whitelist` - コマンド許可ロールを追加\n"
+                "`/whitelist` - コマンド許可ロール一覧を表示\n"
+                "`/delete_whitelist` - コマンド許可ロールを削除"
+            ),
+            inline=False
+        )
+
+        embed.add_field(
+            name="■ 管理者 + 許可ロール",
+            value=(
+                "`/message` - 指定チャンネルにメッセージ送信（メンション・改行可）\n"
+                "`/add_announcement_list` - 自動アナウンス公開リストにチャンネルを追加\n"
+                "`/announcement_list` - 自動アナウンス公開リストを表示\n"
+                "`/delete_announcement_list` - 自動アナウンス公開リストからチャンネルを削除"
+            ),
+            inline=False
+        )
+
+        embed.add_field(
+            name="■ 全ユーザー利用可",
+            value=(
+                "`/server_information` - サーバー情報を表示\n"
+                "`/user_information` - ユーザー情報を表示\n"
+                "`/support` - サポートサーバーの招待リンクを表示\n"
+                "`/help` - コマンドの詳細を表示"
+            ),
+            inline=False
+        )
+
+        embed.add_field(
+            name="サポートサーバー",
+            value="[こちらをクリック](https://discord.gg/Yv9uJ32KkT)",
+            inline=False
+        )
+
+        embed.set_footer(text="ご不明点等がございましたら、サポートサーバーまでお問い合わせください。")
+
+        await message.channel.send(embed=embed)
+
+    await bot.process_commands(message)
+
+
 bot.run(TOKEN)

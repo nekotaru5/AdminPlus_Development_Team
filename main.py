@@ -362,81 +362,77 @@ async def help_command(interaction: discord.Interaction):
 
 @bot.event
 async def on_message(message: discord.Message):
-    if message.author.bot:
-        return
-
-    if bot.user in message.mentions:
-        embed = discord.Embed(
-            title="コマンド一覧",
-            description="Botで使用できるコマンドの概要です。",
-            color=discord.Color.green()
-        )
-
-        embed.add_field(
-            name="■ 管理者専用",
-            value=(
-                "`/add_whitelist` - コマンド許可ロールを追加\n"
-                "`/whitelist` - コマンド許可ロール一覧を表示\n"
-                "`/delete_whitelist` - コマンド許可ロールを削除"
-            ),
-            inline=False
-        )
-
-        embed.add_field(
-            name="■ 管理者 + 許可ロール",
-            value=(
-                "`/message` - 指定チャンネルにメッセージ送信（メンション・改行可）\n"
-                "`/add_announcement_list` - 自動アナウンス公開リストにチャンネルを追加\n"
-                "`/announcement_list` - 自動アナウンス公開リストを表示\n"
-                "`/delete_announcement_list` - 自動アナウンス公開リストからチャンネルを削除"
-            ),
-            inline=False
-        )
-
-        embed.add_field(
-            name="■ 全ユーザー利用可",
-            value=(
-                "`/server_information` - サーバー情報を表示\n"
-                "`/user_information` - ユーザー情報を表示\n"
-                "`/support` - サポートサーバーの招待リンクを表示\n"
-                "`/help` - コマンドの詳細を表示"
-            ),
-            inline=False
-        )
-
-        embed.add_field(
-            name="サポートサーバー",
-            value="[こちらをクリック](https://discord.gg/Yv9uJ32KkT)",
-            inline=False
-        )
-
-        embed.set_footer(text="ご不明点等がございましたら、サポートサーバーまでお問い合わせください。")
-
-        await message.channel.send(embed=embed)
-
-    await bot.process_commands(message)
-
-
-
-@bot.event
-async def on_message(message):
     try:
-        if message.author.bot or not message.guild:
+        if message.author.bot:
             return
 
-        guild_id = str(message.guild.id)
-        if guild_id in announcement_channels and message.channel.id in announcement_channels[guild_id]:
-            try:
-                await message.publish()
-                await message.add_reaction("✅")
-                await message.add_reaction("👍")
-                await message.add_reaction("👎")
-            except discord.errors.Forbidden:
-                print(f"メッセージの公開または反応の追加に失敗しました: 権限不足 (Channel: {message.channel.id})")
-            except Exception as e:
-                print(f"メッセージの処理中にエラーが発生しました: {e}")
+        # メンションでヘルプ表示
+        if bot.user in message.mentions:
+            embed = discord.Embed(
+                title="コマンド一覧",
+                description="Botで使用できるコマンドの概要です。",
+                color=discord.Color.green()
+            )
+
+            embed.add_field(
+                name="■ 管理者専用",
+                value=(
+                    "`/add_whitelist` - コマンド許可ロールを追加\n"
+                    "`/whitelist` - コマンド許可ロール一覧を表示\n"
+                    "`/delete_whitelist` - コマンド許可ロールを削除"
+                ),
+                inline=False
+            )
+
+            embed.add_field(
+                name="■ 管理者 + 許可ロール",
+                value=(
+                    "`/message` - 指定チャンネルにメッセージ送信（メンション・改行可）\n"
+                    "`/add_announcement_list` - 自動アナウンス公開リストにチャンネルを追加\n"
+                    "`/announcement_list` - 自動アナウンス公開リストを表示\n"
+                    "`/delete_announcement_list` - 自動アナウンス公開リストからチャンネルを削除"
+                ),
+                inline=False
+            )
+
+            embed.add_field(
+                name="■ 全ユーザー利用可",
+                value=(
+                    "`/server_information` - サーバー情報を表示\n"
+                    "`/user_information` - ユーザー情報を表示\n"
+                    "`/support` - サポートサーバーの招待リンクを表示\n"
+                    "`/help` - コマンドの詳細を表示"
+                ),
+                inline=False
+            )
+
+            embed.add_field(
+                name="サポートサーバー",
+                value="[こちらをクリック](https://discord.gg/Yv9uJ32KkT)",
+                inline=False
+            )
+
+            embed.set_footer(text="ご不明点等がございましたら、サポートサーバーまでお問い合わせください。")
+            await message.channel.send(embed=embed)
+
+        # アナウンス公開処理
+        if message.guild:
+            guild_id = str(message.guild.id)
+            if guild_id in announcement_channels and message.channel.id in announcement_channels[guild_id]:
+                try:
+                    await message.publish()
+                    await message.add_reaction("✅")
+                    await message.add_reaction("👍")
+                    await message.add_reaction("👎")
+                except discord.errors.Forbidden:
+                    print(f"権限不足でメッセージの公開またはリアクションの追加に失敗 (Channel: {message.channel.id})")
+                except Exception as e:
+                    print(f"メッセージの処理中にエラーが発生: {e}")
+
     except Exception as e:
-        print(f"on_messageイベントでエラーが発生しました: {e}")
+        print(f"on_messageイベントでエラーが発生: {e}")
+
+    await bot.process_commands(message)
 
 
 bot.run(TOKEN)

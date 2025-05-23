@@ -94,11 +94,11 @@ async def add_whitelist(interaction: discord.Interaction, role: discord.Role):
         if not interaction.guild:
             await interaction.response.send_message("このコマンドはサーバー内でのみ使用できます", ephemeral=True)
             return
-            
+
         member = interaction.guild.get_member(interaction.user.id)
         if not member:
             member = await interaction.guild.fetch_member(interaction.user.id)
-            
+
         if not member or not member.guild_permissions.administrator:
             await interaction.response.send_message("このコマンドは管理者のみが使用できます", ephemeral=True)
             return
@@ -163,7 +163,7 @@ async def show_whitelist(interaction: discord.Interaction):
     await interaction.response.send_message("許可ロール:\n" + "\n".join(roles), ephemeral=True)
 
 # アナウンスチャンネル管理コマンド
-@bot.tree.command(name="add_announcement_list", description="アナウンスチャンネルを追加します")
+@bot.tree.command(name="add_announcement_list", description="自動アナウンス公開リストにチャンネルを追加します。")
 @app_commands.describe(channel="追加するチャンネル")
 async def add_announcement_list(interaction: discord.Interaction, channel: discord.TextChannel):
     if not await check_permissions(interaction):
@@ -177,11 +177,11 @@ async def add_announcement_list(interaction: discord.Interaction, channel: disco
     if channel.id not in announcement_channels[guild_id]:
         announcement_channels[guild_id].append(channel.id)
         save_announcement_channels()
-        await interaction.response.send_message(f"{channel.mention} をアナウンスチャンネルに追加しました", ephemeral=True)
+        await interaction.response.send_message(f"{channel.mention} を自動アナウンス公開リストに追加しました", ephemeral=True)
     else:
-        await interaction.response.send_message(f"{channel.mention} は既にアナウンスチャンネルです", ephemeral=True)
+        await interaction.response.send_message(f"{channel.mention} は既に自動アナウンス公開リストにあります。", ephemeral=True)
 
-@bot.tree.command(name="announcement_list", description="アナウンスチャンネルを表示します")
+@bot.tree.command(name="announcement_list", description="自動アナウンス公開リストを表示します")
 async def announcement_list(interaction: discord.Interaction):
     if not await check_permissions(interaction):
         await interaction.response.send_message("このコマンドを実行する権限がありません", ephemeral=True)
@@ -189,13 +189,13 @@ async def announcement_list(interaction: discord.Interaction):
 
     guild_id = str(interaction.guild_id)
     if guild_id not in announcement_channels or not announcement_channels[guild_id]:
-        await interaction.response.send_message("アナウンスチャンネルは設定されていません", ephemeral=True)
+        await interaction.response.send_message("自動アナウンス公開リストにチャンネルはありません。", ephemeral=True)
         return
 
     channels = [f"<#{channel_id}>" for channel_id in announcement_channels[guild_id]]
     await interaction.response.send_message("アナウンスチャンネル:\n" + "\n".join(channels), ephemeral=True)
 
-@bot.tree.command(name="delete_announcement_list", description="アナウンスチャンネルを削除します")
+@bot.tree.command(name="delete_announcement_list", description="自動アナウンス公開リストからチャンネルを削除します。")
 @app_commands.describe(channel="削除するチャンネル")
 async def delete_announcement_list(interaction: discord.Interaction, channel: discord.TextChannel):
     if not await check_permissions(interaction):
@@ -206,9 +206,9 @@ async def delete_announcement_list(interaction: discord.Interaction, channel: di
     if guild_id in announcement_channels and channel.id in announcement_channels[guild_id]:
         announcement_channels[guild_id].remove(channel.id)
         save_announcement_channels()
-        await interaction.response.send_message(f"{channel.mention} をアナウンスチャンネルから削除しました", ephemeral=True)
+        await interaction.response.send_message(f"{channel.mention} を自動アナウンス公開リストから削除しました", ephemeral=True)
     else:
-        await interaction.response.send_message(f"{channel.mention} はアナウンスチャンネルではありません", ephemeral=True)
+        await interaction.response.send_message(f"{channel.mention} は自動アナウンス公開リストに含まれていません。", ephemeral=True)
 
 # その他のコマンド
 @bot.tree.command(name="user_information", description="ユーザーの情報を表示します")
@@ -295,11 +295,11 @@ async def delete_message(interaction: discord.Interaction, amount: int):
         if not isinstance(interaction.channel, discord.TextChannel):
             await interaction.response.send_message("このコマンドはテキストチャンネルでのみ使用できます", ephemeral=True)
             return
-            
+
         if not interaction.channel.permissions_for(interaction.guild.me).manage_messages:
             await interaction.response.send_message("メッセージを削除する権限がありません", ephemeral=True)
             return
-            
+
         deleted = await interaction.channel.purge(limit=amount)
         await interaction.response.send_message(f"{len(deleted)}件のメッセージを削除しました", ephemeral=True)
     except discord.Forbidden:
@@ -316,6 +316,49 @@ async def support(interaction: discord.Interaction):
     )
     embed.add_field(name="招待リンク", value="https://discord.gg/Yv9uJ32KkT")
     await interaction.response.send_message(embed=embed)
+
+@bot.tree.command(name="help", description="コマンドの詳細を表示します。")
+async def help_command(interaction: discord.Interaction):
+    embed = discord.Embed(
+        title="コマンド一覧",
+        description="Botで使用できるコマンドの概要です。",
+        color=discord.Color.green()
+    )
+
+    embed.add_field(
+        name="■ 管理者専用",
+        value=(
+            "`/add_whitelist` - コマンド許可ロールを追加\n"
+            "`/whitelist` - コマンド許可ロール一覧を表示\n"
+            "`/delete_whitelist` - コマンド許可ロールを削除"
+        ),
+        inline=False
+    )
+
+    embed.add_field(
+        name="■ 管理者 + 許可ロール",
+        value=(
+            "`/message` - 指定チャンネルにメッセージ送信（メンション・改行可）\n"
+            "`/add_announcement_list` - 自動アナウンス公開リストにチャンネルを追加\n"
+            "`/announcement_list` - 自動アナウンス公開リストを表示\n"
+            "`/delete_announcement_list` - 自動アナウンス公開リストからチャンネルを削除"
+        ),
+        inline=False
+    )
+
+    embed.add_field(
+        name="■ 全ユーザー利用可",
+        value=(
+            "`/server_information` - サーバー情報を表示\n"
+            "`/user_information` - ユーザー情報を表示\n"
+            "`/support` - サポートサーバーの招待リンクを表示\n"
+            "`/help` - コマンドの詳細を表示"
+        ),
+        inline=False
+    )
+
+    embed.set_footer(text="ご不明点等がございましたら、サポートサーバーに問い合わせてください。")
+    await interaction.response.send_message(embed=embed)  # ← ephemeral=False にする or 削除でOK
 
 @bot.event
 async def on_message(message):

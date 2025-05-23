@@ -1,6 +1,6 @@
 ご利用にあたって
 
-Corebotをご利用いただきありがとうございます。
+AdminPlusをご利用いただきありがとうございます。
 以下のガイドラインに同意のうえ、ご使用ください。
 
 使用は自由ですが、以下の行為は禁止です：
@@ -12,7 +12,7 @@ Corebotをご利用いただきありがとうございます。
 自作Botとしての偽装・再公開
 
 
-※Corebot自体の導入・利用は自由です。
+※AdminPlus自体の導入・利用は自由です。
 
 導入リンク:
 https://discord.com/oauth2/authorize?client_id=1352772997974593579&permissions=8&integration_type=0&scope=bot
@@ -20,13 +20,13 @@ https://discord.com/oauth2/authorize?client_id=1352772997974593579&permissions=8
 ご意見・ご要望も歓迎しております！
 不具合の報告、機能の提案などがありましたら、ぜひフィードバックをお寄せください。
 
-© 2025 Corebot Support (nekotaru5)
-本Botおよび関連コードのすべての権利は、Corebot Support（nekotaru5）に帰属します。
+© 2025 AdminPlus Support (nekotaru5)
+本Botおよび関連コードのすべての権利は、AdminPlus Support（nekotaru5）に帰属します。
 https://discord.gg/Yv9uJ32KkT
 
 Terms of Use
 
-Thank you for using Corebot.
+Thank you for using AdminPlus.
 By using this bot, you agree to the following terms:
 
 You're free to use the bot, but the following are strictly prohibited:
@@ -46,6 +46,6 @@ https://discord.com/oauth2/authorize?client_id=1352772997974593579&permissions=8
 Feedback is always welcome!
 If you find bugs or have feature suggestions, don't hesitate to let us know.
 
-© 2025 Corebot Support (nekotaru5)
-All rights reserved by Corebot Support (nekotaru5).
+© 2025 AdminPlus Support (nekotaru5)
+All rights reserved by AdminPlus Support (nekotaru5).
 https://discord.gg/Yv9uJ32KkT

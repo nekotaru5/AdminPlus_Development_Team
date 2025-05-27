@@ -91,6 +91,11 @@ async def on_ready():
         print(f"コマンドの同期に失敗: {e}")
 
     print(f"{bot.user} としてログインしました")
+
+@bot.command()
+async def Admin(ctx):
+    await ctx.send('( ˙꒳​˙ )))ｳﾝｳﾝ!!それで?それで?なんか用?')
+
 # ホワイトリスト管理コマンド
 @bot.tree.command(name="add_whitelist", description="コマンド許可ロールを追加します")
 @app_commands.describe(role="許可するロール")

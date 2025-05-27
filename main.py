@@ -79,13 +79,18 @@ async def on_ready():
     global allowed_roles, announcement_channels
     allowed_roles = load_allowed_roles()
     announcement_channels = load_announcement_channels()
+
+    # ステータスを「視聴中 nekotaru5」に設定
+    activity = discord.Activity(type=discord.ActivityType.watching, name="nekotaru5のYouTubeChを視聴中")
+    await bot.change_presence(status=discord.Status.online, activity=activity)
+
     try:
         await bot.tree.sync()
         print("コマンドを同期しました")
     except Exception as e:
         print(f"コマンドの同期に失敗: {e}")
-    print(f"{bot.user} としてログインしました")
 
+    print(f"{bot.user} としてログインしました")
 # ホワイトリスト管理コマンド
 @bot.tree.command(name="add_whitelist", description="コマンド許可ロールを追加します")
 @app_commands.describe(role="許可するロール")

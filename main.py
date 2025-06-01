@@ -258,6 +258,9 @@ async def server_information(interaction: discord.Interaction):
     max_messages = 200
     inactivity = max(0, min(100, 100 - int((daily_message_count / max_messages) * 100)))
 
+    boost_count = guild.premium_subscription_count
+    boost_level = guild.premium_tier
+
     embed = discord.Embed(
         title=f"{guild.name} のサーバー情報",
         color=discord.Color.blue()
@@ -270,6 +273,8 @@ async def server_information(interaction: discord.Interaction):
     embed.add_field(name="過疎度", value=f"{inactivity}%", inline=True)
     embed.add_field(name="カテゴリー数", value=str(categories), inline=True)
     embed.add_field(name="チャンネル数", value=str(total_channels), inline=True)
+    embed.add_field(name="ブースト数", value=f"{boost_count}回", inline=True)
+    embed.add_field(name="ブーストレベル", value=f"レベル {boost_level}", inline=True)
 
     await interaction.response.send_message(embed=embed)
 

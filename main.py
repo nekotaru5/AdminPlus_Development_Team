@@ -193,20 +193,6 @@ async def add_announcement_list(interaction: discord.Interaction, channel: disco
     else:
         await interaction.response.send_message(f"{channel.mention} は既に自動アナウンス公開リストにあります。", ephemeral=True)
 
-@bot.tree.command(name="announcement_list", description="自動アナウンス公開リストを表示します")
-async def announcement_list(interaction: discord.Interaction):
-    if not await check_permissions(interaction):
-        await interaction.response.send_message("このコマンドを実行する権限がありません", ephemeral=True)
-        return
-
-    guild_id = str(interaction.guild_id)
-    if guild_id not in announcement_channels or not announcement_channels[guild_id]:
-        await interaction.response.send_message("自動アナウンス公開リストにチャンネルはありません。", ephemeral=True)
-        return
-
-    channels = [f"<#{channel_id}>" for channel_id in announcement_channels[guild_id]]
-    await interaction.response.send_message("アナウンスチャンネル:\n" + "\n".join(channels), ephemeral=True)
-
 @bot.tree.command(name="delete_announcement_list", description="自動アナウンス公開リストからチャンネルを削除します。")
 @app_commands.describe(channel="削除するチャンネル")
 async def delete_announcement_list(interaction: discord.Interaction, channel: discord.TextChannel):
@@ -221,6 +207,20 @@ async def delete_announcement_list(interaction: discord.Interaction, channel: di
         await interaction.response.send_message(f"{channel.mention} を自動アナウンス公開リストから削除しました", ephemeral=True)
     else:
         await interaction.response.send_message(f"{channel.mention} は自動アナウンス公開リストに含まれていません。", ephemeral=True)
+
+@bot.tree.command(name="announcement_list", description="自動アナウンス公開リストを表示します")
+async def announcement_list(interaction: discord.Interaction):
+    if not await check_permissions(interaction):
+        await interaction.response.send_message("このコマンドを実行する権限がありません", ephemeral=True)
+        return
+
+    guild_id = str(interaction.guild_id)
+    if guild_id not in announcement_channels or not announcement_channels[guild_id]:
+        await interaction.response.send_message("自動アナウンス公開リストにチャンネルはありません。", ephemeral=True)
+        return
+
+    channels = [f"<#{channel_id}>" for channel_id in announcement_channels[guild_id]]
+    await interaction.response.send_message("アナウンスチャンネル:\n" + "\n".join(channels), ephemeral=True)
 
 # その他のコマンド
 @bot.tree.command(name="user_information", description="ユーザーの情報を表示します")

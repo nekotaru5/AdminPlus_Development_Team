@@ -257,11 +257,9 @@ async def show_birthday_list(interaction: discord.Interaction):
     count = 0
     for user_id, birthday in birthday_list.items():
         member = guild.get_member(int(user_id))
-        if member:  # このサーバーに所属しているユーザーだけを表示
+        if member:
             message += f"{member.mention} - {birthday}\n"
             count += 1
-        else:
-            print(f"[{guild.id}] {user_id} はこのサーバーのメンバーではありません（表示スキップ）")
 
     if count == 0:
         await interaction.response.send_message("このサーバーには登録されている誕生日がありません。", ephemeral=True)

@@ -249,12 +249,25 @@ async def show_birthday_list(interaction: discord.Interaction):
         await interaction.response.send_message("誕生日リストは空です。", ephemeral=True)
         return
 
-    message = "**🎂 登録済みの誕生日一覧 🎂**\n"
-    for user_id, birthday in birthday_list.items():
-        user = await bot.fetch_user(int(user_id))
-        message += f"{user.mention} - {birthday}\n"
+    guild = interaction.guild
+    if not guild:
+        await interaction.response.send_message("このコマンドはサーバー内でのみ使用できます。", ephemeral=True)
+        return
 
-    await interaction.response.send_message(message, ephemeral=True)
+    message = "**🎂 登録済みの誕生日一覧 🎂**\n"
+    count = 0
+    for user_id, birthday in birthday_list.items():
+        member = guild.get_member(int(user_id))
+        if member:  # このサーバーに所属しているユーザーだけを表示
+            message += f"{member.mention} - {birthday}\n"
+            count += 1
+        else:
+            print(f"[{guild.id}] {user_id} はこのサーバーのメンバーではありません（表示スキップ）")
+
+    if count == 0:
+        await interaction.response.send_message("このサーバーには登録されている誕生日がありません。", ephemeral=True)
+    else:
+        await interaction.response.send_message(message)
 
 @bot.tree.command(name="birthdaych_list", description="このサーバーの誕生日通知チャンネルを表示します（管理者または許可ロール限定）")
 async def birthdaych_list(interaction: discord.Interaction):

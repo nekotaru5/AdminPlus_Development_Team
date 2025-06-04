@@ -174,6 +174,63 @@ async def on_ready():
 async def Admin(ctx):
     await ctx.send('呼びましたか？(⁎˃ᴗ˂⁎)')
 
+updates = [
+    {
+        "version": "1.0",
+        "add": ["誕生日機能を追加"],
+        "change": ["特に無し"],
+        "fix": ["特に無し"]
+    }
+]
+
+# 🔁 共通処理を関数化
+def build_update_embed():
+    embed = discord.Embed(
+        title="🛠️ アップデート履歴",
+        description="最新のバージョン情報です",
+        color=discord.Color.orange()
+    )
+
+    for update in updates:
+        content = ""
+
+        if update["add"]:
+            content += "**追加点**\n"
+            content += "\n".join(f"{i+1}. {line}" for i, line in enumerate(update["add"]))
+            content += "\n\n"
+
+        if update["change"]:
+            content += "**変更点**\n"
+            content += "\n".join(f"{i+1}. {line}" for i, line in enumerate(update["change"]))
+            content += "\n\n"
+
+        if update["fix"]:
+            content += "**修正点**\n"
+            content += "\n".join(f"{i+1}. {line}" for i, line in enumerate(update["fix"]))
+            content += "\n"
+
+        embed.add_field(
+            name=f"Version {update['version']}",
+            value=content.strip(),
+            inline=False
+        )
+
+    embed.set_footer(text="最終更新: 2025年6月4日")
+    embed.set_author(name="Admin Plus Dvelopment Team")
+    return embed
+
+# ✅ !update（従来のプレフィックスコマンド）
+@bot.command()
+async def update(ctx):
+    embed = build_update_embed()
+    await ctx.send(embed=embed)
+
+# ✅ /update（新しいスラッシュコマンド）
+@bot.tree.command(name="update", description="アップデート履歴を表示します")
+async def slash_update(interaction: discord.Interaction):
+    embed = build_update_embed()
+    await interaction.response.send_message(embed=embed)
+
 #　誕生日管理コマンド
 @bot.tree.command(name="setbirthdaych", description="誕生日アナウンス用チャンネルを登録または解除します")
 @app_commands.describe(channel="誕生日アナウンスを行うチャンネル")

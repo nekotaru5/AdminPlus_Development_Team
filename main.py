@@ -244,13 +244,20 @@ async def delete_birthdaylist(interaction: discord.Interaction, user: discord.Us
 
 @bot.tree.command(name="birthday_list", description="登録されている誕生日リストを表示します")
 async def show_birthday_list(interaction: discord.Interaction):
-    if not birthday_list:
-        await interaction.response.send_message("誕生日リストは空です。", ephemeral=True)
-        return
-
     guild = interaction.guild
     if not guild:
         await interaction.response.send_message("このコマンドはサーバー内でのみ使用できます。", ephemeral=True)
+        return
+
+    # 管理者か、allowed_roles.json で許可されたロールを持っているかを確認
+    if not interaction.user.guild_permissions.administrator:
+        allowed_role_id = allowed_roles.get(str(guild.id))
+        if not allowed_role_id or all(role.id != int(allowed_role_id) for role in interaction.user.roles):
+            await interaction.response.send_message("このコマンドを使用する権限がありません。", ephemeral=True)
+            return
+
+    if not birthday_list:
+        await interaction.response.send_message("誕生日リストは空です。", ephemeral=True)
         return
 
     message = "**🎂 登録済みの誕生日一覧 🎂**\n"
@@ -264,8 +271,7 @@ async def show_birthday_list(interaction: discord.Interaction):
     if count == 0:
         await interaction.response.send_message("このサーバーには登録されている誕生日がありません。", ephemeral=True)
     else:
-        await interaction.response.send_message(message)
-
+        await interaction.response.send_message(message, ephemeral=True)
 @bot.tree.command(name="birthdaych_list", description="このサーバーの誕生日通知チャンネルを表示します（管理者または許可ロール限定）")
 async def birthdaych_list(interaction: discord.Interaction):
     try:

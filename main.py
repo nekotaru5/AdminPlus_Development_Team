@@ -250,7 +250,7 @@ async def update(ctx):
     embed = build_update_embed()
     await ctx.send(embed=embed)
 
-@bot.command(name="cmds")
+@bot.command(name="help")
 async def prefix_help(ctx):
     embed = discord.Embed(
         title="ヘルプ",

@@ -15,7 +15,7 @@ if not TOKEN:
 
 # intentsを設定（全部有効化）
 intents = discord.Intents.all()
-bot = commands.Bot(command_prefix="!", intents=intents)
+bot = commands.Bot(command_prefix="!", intents=intents, help_command=None)
 tree = bot.tree
 
 class ServerInfo(commands.Cog):

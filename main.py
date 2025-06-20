@@ -23,9 +23,6 @@ def home():
 def run():
     app.run(host='0.0.0.0', port=8080)
 
-# Flask起動用のスレッドを立てる
-Thread(target=run).start()
-
 def ping_loop(url):
     while True:
         try:
@@ -34,6 +31,12 @@ def ping_loop(url):
         except Exception as e:
             print(f'Ping error: {e}')
         time.sleep(300)
+
+# Flask起動用のスレッドを立てる
+Thread(target=run).start()
+
+# ここでping_loopを別スレッドで動かす
+threading.Thread(target=ping_loop, args=('https://your-app-url.onrender.com',), daemon=True).start()
 
 TOKEN = os.environ.get('DISCORD_BOT_TOKEN')
 if not TOKEN:

@@ -7,6 +7,20 @@ from discord.ext import tasks
 from discord.ext import commands
 from discord import Object
 import os
+from threading import Thread
+from flask import Flask
+
+app = Flask('')
+
+@app.route('/')
+def home():
+    return "Bot is running."
+
+def run():
+    app.run(host='0.0.0.0', port=8080)
+
+# Flask起動用のスレッドを立てる
+Thread(target=run).start()
 
 TOKEN = os.environ.get('DISCORD_BOT_TOKEN')
 if not TOKEN:

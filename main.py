@@ -9,6 +9,10 @@ from discord import Object
 import os
 from threading import Thread
 from flask import Flask
+import requests
+import time
+import threading
+
 
 app = Flask('')
 
@@ -21,6 +25,15 @@ def run():
 
 # Flask起動用のスレッドを立てる
 Thread(target=run).start()
+
+def ping_loop(url):
+    while True:
+        try:
+            response = requests.get(url)
+            print(f'Pinged {url}: {response.status_code}')
+        except Exception as e:
+            print(f'Ping error: {e}')
+        time.sleep(300)
 
 TOKEN = os.environ.get('DISCORD_BOT_TOKEN')
 if not TOKEN:

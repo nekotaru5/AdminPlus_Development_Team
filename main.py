@@ -18,8 +18,16 @@ app = Flask('')
 
 @app.route('/')
 def home():
-    return "Bot is running."
-
+    return """
+    <html>
+      <head><title>AdminPlus稼働状況</title></head>
+      <body style="font-family: '游ゴシック', YuGothic, sans-serif; text-align: center; margin-top: 50px;">
+        <h1>🚀 AdminPlusは現在稼働中です。</h1>
+        <p>問題なく稼働しています。</p>
+        <p>いつもご利用ありがとうございます</p>
+      </body>
+    </html>
+    """
 def run():
     app.run(host='0.0.0.0', port=8080)
 

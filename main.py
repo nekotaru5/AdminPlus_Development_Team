@@ -36,7 +36,7 @@ def ping_loop(url):
 Thread(target=run).start()
 
 # ここでping_loopを別スレッドで動かす
-threading.Thread(target=ping_loop, args=('https://your-app-url.onrender.com',), daemon=True).start()
+threading.Thread(target=ping_loop, args=('https://adminplus-development-team.onrender.com',), daemon=True).start()
 
 TOKEN = os.environ.get('DISCORD_BOT_TOKEN')
 if not TOKEN:

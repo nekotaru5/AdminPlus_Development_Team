@@ -527,7 +527,7 @@ def build_update_embed_and_view_public():
             self.add_item(UpdateSelect(self))
 
     view = UpdateView()
-    return embed, view　
+    return embed, view
 
 # ✅ !update（従来のプレフィックスコマンド）
 @bot.command(name="update")

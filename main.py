@@ -412,6 +412,12 @@ def build_help_embed_and_view_public():
 # バージョン情報リスト
 updates = [
     {
+        "version": "1.2",
+        "add": ["DM機能を追加しました（Adminplus管理者のみ利用可能です）"],
+        "change": ["Update、!Update、/help、!helpコマンドの表示方法と表示場所を変更しました。 !"コマンドはDMで表示され、"/"コマンドはプライベートメッセージとして表示されます。 また、ボタンが追加され、以前の埋め込みよりも見やすくなりました。"],
+        "fix": ["特に無し"]
+    },
+{
         "version": "1.1",
         "add": ["!helpコマンド", "/logchコマンド"],
         "change": ["特に無し"],

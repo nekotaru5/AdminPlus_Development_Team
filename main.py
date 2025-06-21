@@ -188,7 +188,6 @@ async def can_modify_birthday(interaction: discord.Interaction, target_user_id: 
 
     return False
 
-
 # 🔧 ログを送る先のチャンネルID（数値）を指定
 LOG_CHANNEL_ID = 1384839728393617539  # ← 実際のチャンネルIDに置き換え
 

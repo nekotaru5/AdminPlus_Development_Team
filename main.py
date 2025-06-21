@@ -61,6 +61,24 @@ class ServerInfo(commands.Cog):
         self.bot = bot
 
 
+# グローバル変数で保持
+white_users = []
+
+def load_white_users():
+    try:
+        with open("WhiteUser.json", "r", encoding="utf-8") as f:
+            data = json.load(f)
+            if not isinstance(data, list):
+                print("WhiteUser.jsonの形式がリストではありません。初期化します。")
+                return []
+            return data
+    except Exception as e:
+        print(f"[WhiteUser] ファイル読み込みエラー: {e}")
+        return []
+
+def save_white_users():
+    with open("WhiteUser.json", "w", encoding="utf-8") as f:
+        json.dump(white_users, f, indent=4)
 
 # 許可ロールの管理
 # 誕生日リスト（ユーザーID: "YYYY-MM-DD"）
@@ -214,12 +232,13 @@ async def before_birthday_check():
 
 @bot.event
 async def on_ready():
-    global allowed_roles, announcement_channels, birthday_list, birthday_channels,log_channels
+    global allowed_roles, announcement_channels, birthday_list, birthday_channels,log_channels,white_users
     allowed_roles = load_allowed_roles()
     announcement_channels = load_announcement_channels()
     birthday_list = load_birthday_list()
     birthday_channels = load_birthday_channels()
     log_channels = load_log_channels()
+    white_users = load_white_users()
 
     if not check_birthdays.is_running():  # ここで起動
         check_birthdays.start()

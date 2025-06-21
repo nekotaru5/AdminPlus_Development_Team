@@ -545,8 +545,8 @@ def build_update_embed_and_view_public():
                 description=format_update_content(selected),
                 color=discord.Color.orange()
             )
-            new_embed.set_footer(text="最終更新: 2025年6月4日")
-            new_embed.set_author(name="Admin Plus Development Team")
+            new_embed.set_footer(text="最終更新: 2025年6月22日")
+            new_embed.set_author(name="AdminPlus Development Team")
             await interaction.response.edit_message(embed=new_embed)
 
     class UpdateView(discord.ui.View):

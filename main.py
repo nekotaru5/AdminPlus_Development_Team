@@ -204,7 +204,7 @@ async def update_status_loop():
     guild_count = len(bot.guilds)
     activity = discord.Activity(
         type=discord.ActivityType.watching,
-        name=f"[Beta]AdminPlusは{guild_count}個のサーバーに導入されています"
+        name=f"AdminPlusは{guild_count}個のサーバーに導入されています"
     )
     await bot.change_presence(status=discord.Status.online, activity=activity)
 

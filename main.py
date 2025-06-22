@@ -199,6 +199,18 @@ async def send_log(bot, message: str):
             await channel.send(f"📝 ログ: {message}")
         except Exception as e:
             print(f"[ログ送信エラー] {e}")
+@tasks.loop(minutes=1)
+async def update_status_loop():
+    guild_count = len(bot.guilds)
+    activity = discord.Activity(
+        type=discord.ActivityType.watching,
+        name=f"[Beta]AdminPlusは{guild_count}個のサーバーに導入されています"
+    )
+    await bot.change_presence(status=discord.Status.online, activity=activity)
+
+@update_status_loop.before_loop
+async def before_update_status():
+    await bot.wait_until_ready()
 
 @tasks.loop(minutes=1)
 async def check_birthdays():
@@ -231,7 +243,7 @@ async def before_birthday_check():
 
 @bot.event
 async def on_ready():
-    global allowed_roles, announcement_channels, birthday_list, birthday_channels,log_channels,white_users
+    global allowed_roles, announcement_channels, birthday_list, birthday_channels, log_channels, white_users
     allowed_roles = load_allowed_roles()
     announcement_channels = load_announcement_channels()
     birthday_list = load_birthday_list()
@@ -239,11 +251,13 @@ async def on_ready():
     log_channels = load_log_channels()
     white_users = load_white_users()
 
-    if not check_birthdays.is_running():  # ここで起動
+    if not check_birthdays.is_running():
         check_birthdays.start()
 
-    activity = discord.Activity(type=discord.ActivityType.watching, name="nekotaru5のYouTubeChを視聴中")
-    await bot.change_presence(status=discord.Status.online, activity=activity)
+    if not update_status_loop.is_running():
+        update_status_loop.start()
+
+    await update_status()  # ステータスを初期表示
 
     try:
         await bot.tree.sync()
@@ -1110,5 +1124,13 @@ async def on_message_delete(message):
     embed.set_author(name=str(message.author), icon_url=message.author.display_avatar.url)
 
     await channel.send(embed=embed)
+
+@bot.event
+async def on_guild_join(guild):
+    await update_status()
+
+@bot.event
+async def on_guild_remove(guild):
+    await update_status()
     
 bot.run(TOKEN)

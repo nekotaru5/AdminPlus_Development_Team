@@ -666,6 +666,65 @@ async def help(ctx):
 
 
 # ✅ /update（新しいスラッシュコマンド）
+@bot.tree.command(name="update_message", description="すべてのアップデートチャンネルに一斉送信（ホワイトユーザーのみ）")
+@app_commands.describe(message="送信する内容（改行・メンション可）")
+async def update_message(interaction: discord.Interaction, message: str):
+    # ホワイトユーザー制限
+    if str(interaction.user.id) not in map(str, white_users):
+        await interaction.response.send_message(
+            "❌ あなたにはこのコマンドを実行する権限がありません（ホワイトユーザー専用）。",
+            ephemeral=True
+        )
+        return
+
+    # メッセージ送信処理
+    count = 0
+    for guild_id, channel_id in update_channels.items():
+        guild = bot.get_guild(int(guild_id))
+        if not guild:
+            continue
+        channel = guild.get_channel(channel_id)
+        if not channel:
+            continue
+        try:
+            await channel.send(message)
+            count += 1
+        except Exception as e:
+            print(f"[エラー] {guild_id} の送信に失敗: {e}")
+
+    await interaction.response.send_message(
+        f"✅ {count} チャンネルにメッセージを送信しました。",
+        ephemeral=True
+    )
+
+    # ログ出力
+    print(f"✅ {interaction.user} が /update_message を実行し、{count} チャンネルに送信しました。")
+
+@bot.tree.command(name="updatech", description="アップデートチャンネルを設定（管理者または許可ロールのみ）")
+@app_commands.describe(channel="送信先チャンネル")
+async def updatech(interaction: discord.Interaction, channel: discord.TextChannel):
+    global update_channels
+
+    if not await check_permissions(interaction):
+        await interaction.response.send_message(
+            "❌ このコマンドを実行する権限がありません（管理者または許可ロール限定）。",
+            ephemeral=True
+        )
+        return
+
+    guild_id = str(interaction.guild_id)
+    update_channels[guild_id] = channel.id
+    save_update_channels()
+
+    # ユーザーへの返信
+    await interaction.response.send_message(
+        f"✅ アップデートチャンネルを {channel.mention} に設定しました。",
+        ephemeral=True
+    )
+
+    # ✅ コンソールログ出力
+    print(f"[{guild_id}] で、[{channel.id}] にアップデートチャンネルが設定されました。")
+
 @bot.tree.command(name="server_list", description="Botが参加しているサーバー一覧を表示（ページ付き）")
 async def server_list(interaction: discord.Interaction):
     guilds = bot.guilds

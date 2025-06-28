@@ -783,8 +783,8 @@ async def set_log_channel(interaction: discord.Interaction, channel: discord.Tex
 
 @bot.tree.command(name="update", description="アップデート履歴を表示します")
 async def slash_update(interaction: discord.Interaction):
-    embed = build_update_embed()
-    await interaction.response.send_message(embed=embed)
+    embed, view = build_update_embed_and_view_ephemeral()
+    await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 
 @bot.command()
 async def Admin(ctx):

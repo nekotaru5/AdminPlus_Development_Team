@@ -199,8 +199,7 @@ async def send_log(bot, message: str):
             await channel.send(f"📝 ログ: {message}")
         except Exception as e:
             print(f"[ログ送信エラー] {e}")
-@tasks.loop(minutes=1)
-async def update_status_loop():
+async def do_update_status():
     guild_count = len(bot.guilds)
     activity = discord.Activity(
         type=discord.ActivityType.watching,
@@ -208,9 +207,14 @@ async def update_status_loop():
     )
     await bot.change_presence(status=discord.Status.online, activity=activity)
 
+@tasks.loop(minutes=1)
+async def update_status_loop():
+    await do_update_status()
+
 @update_status_loop.before_loop
 async def before_update_status():
     await bot.wait_until_ready()
+
 
 @tasks.loop(minutes=1)
 async def check_birthdays():
@@ -257,7 +261,7 @@ async def on_ready():
     if not update_status_loop.is_running():
         update_status_loop.start()
 
-    await update_status_loop()  # ステータスを初期表示
+    await do_update_status()  # ✅ 即時1回だけステータス更新
 
     try:
         await bot.tree.sync()

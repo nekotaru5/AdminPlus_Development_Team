@@ -274,6 +274,57 @@ async def on_ready():
     await send_log(bot, f"{bot.user} としてログインしました")
 
 # 非公開用（ephemeral）ヘルプ
+class ServerListView(discord.ui.View):
+    def __init__(self, guilds, user: discord.User, timeout=60):
+        super().__init__(timeout=timeout)
+        self.guilds = guilds
+        self.user = user
+        self.page = 0
+        self.per_page = 10
+
+    def get_page_embed(self):
+        start = self.page * self.per_page
+        end = start + self.per_page
+        chunk = self.guilds[start:end]
+
+        embed = discord.Embed(
+            title=f"Botが参加しているサーバー一覧 ({len(self.guilds)}個中 {start+1}〜{min(end, len(self.guilds))})",
+            color=discord.Color.green()
+        )
+
+        for g in chunk:
+            icon_url = g.icon.url if g.icon else "https://cdn.discordapp.com/embed/avatars/0.png"
+            name = f"**{g.name}**"
+            value = f"[サーバーアイコン]({icon_url})\n👥 メンバー数: {g.member_count}\n🚀 ブースト数:{g.premium_subscription_count}回 / レベル:{g.premium_tier}レベル"
+            embed.add_field(name=name, value=value, inline=False)
+
+        embed.set_footer(text=f"ページ {self.page + 1} / {((len(self.guilds) - 1) // self.per_page) + 1}")
+        return embed
+
+    def update_buttons(self):
+        # ボタンが存在する前に呼ばれないようにする
+        for item in self.children:
+            if isinstance(item, discord.ui.Button):
+                if item.label == "◀ 戻る":
+                    item.disabled = self.page == 0
+                elif item.label == "次へ ▶":
+                    item.disabled = (self.page + 1) * self.per_page >= len(self.guilds)
+
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        return interaction.user.id == self.user.id
+
+    @discord.ui.button(label="◀ 戻る", style=discord.ButtonStyle.secondary, disabled=True)
+    async def prev_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.page -= 1
+        self.update_buttons()
+        await interaction.response.edit_message(embed=self.get_page_embed(), view=self)
+
+    @discord.ui.button(label="次へ ▶", style=discord.ButtonStyle.secondary)
+    async def next_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.page += 1
+        self.update_buttons()
+        await interaction.response.edit_message(embed=self.get_page_embed(), view=self)
+
 def build_help_embed_and_view_ephemeral():
     import discord
 
@@ -598,6 +649,16 @@ async def help(ctx):
 
 
 # ✅ /update（新しいスラッシュコマンド）
+@bot.tree.command(name="server_list", description="Botが参加しているサーバー一覧を表示（ページ付き）")
+async def server_list(interaction: discord.Interaction):
+    guilds = bot.guilds
+    view = ServerListView(guilds, interaction.user)
+
+    await interaction.response.send_message(
+        embed=view.get_page_embed(),
+        view=view,
+        ephemeral=True
+    )
 
 @bot.tree.command(name="dm", description="指定したユーザーにDMを送信します。")
 @app_commands.describe(user="DMを送る相手", message="送信するメッセージ")

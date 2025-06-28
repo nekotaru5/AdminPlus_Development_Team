@@ -295,7 +295,7 @@ class ServerListView(discord.ui.View):
         for g in chunk:
             icon_url = g.icon.url if g.icon else "https://cdn.discordapp.com/embed/avatars/0.png"
             name = f"**{g.name}**"
-            value = f"[サーバーアイコン]({icon_url})\n👥 メンバー数: {g.member_count}\n🚀 ブースト数:{g.premium_subscription_count}回 / レベル:{g.premium_tier}レベル"
+            value = f"[🖼️サーバーアイコン]({icon_url})\n👥 メンバー数: {g.member_count}\n🚀 ブースト数:{g.premium_subscription_count}回 / レベル:{g.premium_tier}レベル"
             embed.add_field(name=name, value=value, inline=False)
 
         embed.set_footer(text=f"ページ {self.page + 1} / {((len(self.guilds) - 1) // self.per_page) + 1}")

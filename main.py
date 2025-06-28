@@ -699,6 +699,7 @@ async def update_message(interaction: discord.Interaction, message: str):
 
     # ログ出力
     print(f"✅ {interaction.user} が /update_message を実行し、{count} チャンネルに送信しました。")
+    await send_log(f"✅ {interaction.user} が /update_message を実行し、{count} チャンネルに送信しました。")
 
 @bot.tree.command(name="updatech", description="アップデートチャンネルを設定（管理者または許可ロールのみ）")
 @app_commands.describe(channel="送信先チャンネル")
@@ -724,7 +725,7 @@ async def updatech(interaction: discord.Interaction, channel: discord.TextChanne
 
     # ✅ コンソールログ出力
     print(f"[{guild_id}] で、[{channel.id}] にアップデートチャンネルが設定されました。")
-
+    await send_log(f"[{guild_id}] で、[{channel.id}] にアップデートチャンネルが設定されました。")
 @bot.tree.command(name="server_list", description="Botが参加しているサーバー一覧を表示（ページ付き）")
 async def server_list(interaction: discord.Interaction):
     guilds = bot.guilds

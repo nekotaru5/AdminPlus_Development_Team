@@ -257,7 +257,7 @@ async def on_ready():
     if not update_status_loop.is_running():
         update_status_loop.start()
 
-    await update_status()  # ステータスを初期表示
+    await update_status_loop()  # ステータスを初期表示
 
     try:
         await bot.tree.sync()

@@ -261,13 +261,16 @@ async def before_birthday_check():
 
 @bot.event
 async def on_ready():
-    global allowed_roles, announcement_channels, birthday_list, birthday_channels, log_channels, white_users
+    global allowed_roles, announcement_channels, birthday_list, birthday_channels
+    global log_channels, white_users, update_channels
+
     allowed_roles = load_allowed_roles()
     announcement_channels = load_announcement_channels()
     birthday_list = load_birthday_list()
     birthday_channels = load_birthday_channels()
     log_channels = load_log_channels()
     white_users = load_white_users()
+    update_channels = load_update_channels()  # ← 追加！
 
     if not check_birthdays.is_running():
         check_birthdays.start()
@@ -275,14 +278,14 @@ async def on_ready():
     if not update_status_loop.is_running():
         update_status_loop.start()
 
-    await do_update_status()  # ✅ 即時1回だけステータス更新
+    await do_update_status()
 
     try:
         await bot.tree.sync()
         await send_log(bot, "コマンドを同期しました")
     except Exception as e:
         print(f"コマンドの同期に失敗: {e}")
-        await send_log(f"コマンドの同期に失敗: {e}")
+        await send_log(bot, f"コマンドの同期に失敗: {e}")
 
     print(f"{bot.user} としてログインしました")
     await send_log(bot, f"{bot.user} としてログインしました")

@@ -62,6 +62,20 @@ class ServerInfo(commands.Cog):
 
 
 # グローバル変数で保持
+update_channels = {}
+
+def load_update_channels():
+    try:
+        with open("update_channel.json", "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"[update_channel.json] 読み込みエラー: {e}")
+        return {}
+
+def save_update_channels():
+    with open("update_channel.json", "w", encoding="utf-8") as f:
+        json.dump(update_channels, f, indent=4)
+
 white_users = []
 
 def load_white_users():

@@ -765,6 +765,33 @@ async def server_list(interaction: discord.Interaction):
         ephemeral=True
     )
 
+@bot.tree.context_menu(name="メッセージを通報する")
+async def report_message(interaction: discord.Interaction, message: discord.Message):
+    guild_id = str(interaction.guild_id)
+    report_channel_id = report_channels.get(guild_id)
+
+    if not report_channel_id:
+        await interaction.response.send_message("⚠️ 通報チャンネルが設定されていません。", ephemeral=True)
+        return
+
+    report_channel = interaction.client.get_channel(report_channel_id)
+    if not report_channel:
+        await interaction.response.send_message("⚠️ 通報チャンネルが見つかりません。", ephemeral=True)
+        return
+
+    message_link = f"https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}"
+
+    embed = discord.Embed(
+        title="通報されました",
+        color=discord.Color.red()
+    )
+    embed.add_field(name="通報者", value=f"`{interaction.user.name}`", inline=False)
+    embed.add_field(name="対象メッセージ", value=f"[こちら]({message_link})", inline=False)
+    embed.timestamp = discord.utils.utcnow()
+
+    await report_channel.send(embed=embed)
+    await interaction.response.send_message("✅ 通報を送信しました。", ephemeral=True)
+
 @bot.tree.command(name="dm", description="指定したユーザーにDMを送信します。")
 @app_commands.describe(user="DMを送る相手", message="送信するメッセージ")
 async def dm(interaction: discord.Interaction, user: discord.User, message: str):

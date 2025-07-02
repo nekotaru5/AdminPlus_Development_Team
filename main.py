@@ -792,6 +792,22 @@ async def report_message(interaction: discord.Interaction, message: discord.Mess
     await report_channel.send(embed=embed)
     await interaction.response.send_message("✅ 通報を送信しました。", ephemeral=True)
 
+@bot.tree.command(name="reportch", description="通報チャンネルを設定します（管理者または許可ロール限定）")
+async def set_report_channel(interaction: discord.Interaction, channel: discord.TextChannel):
+    if not await check_permissions(interaction):
+        await interaction.response.send_message("❌ このコマンドを実行する権限がありません。", ephemeral=True)
+        return
+
+    guild_id = str(interaction.guild_id)
+    report_channels[guild_id] = channel.id
+    save_report_channels()
+
+    # ログ出力
+    print(f"[通報設定] サーバーID: {guild_id} にチャンネルID: {channel.id} を通報用チャンネルとして設定しました")
+    await send_log(bot, f"[通報設定] サーバーID: {guild_id} にチャンネルID: {channel.id} を通報用チャンネルとして設定しました")
+
+    await interaction.response.send_message(f"✅ 通報チャンネルを {channel.mention} に設定しました。", ephemeral=True)
+
 @bot.tree.command(name="dm", description="指定したユーザーにDMを送信します。")
 @app_commands.describe(user="DMを送る相手", message="送信するメッセージ")
 async def dm(interaction: discord.Interaction, user: discord.User, message: str):

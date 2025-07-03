@@ -830,6 +830,31 @@ async def dm(interaction: discord.Interaction, user: discord.User, message: str)
         await interaction.response.send_message(f"❌ エラーが発生しました: {e}", ephemeral=True)
         print(f"[エラー] {interaction.user} → {user}：{e}")
 
+@bot.tree.command(name="delete_bot_message", description="Botが送信したメッセージを削除します（メッセージID指定）")
+@app_commands.describe(message_id="削除したいメッセージのID")
+async def delete_bot_message(interaction: discord.Interaction, message_id: str):
+    if not await check_permissions(interaction):
+        await interaction.response.send_message("❌ このコマンドを実行する権限がありません。", ephemeral=True)
+        return
+
+    try:
+        channel = interaction.channel
+        message = await channel.fetch_message(int(message_id))
+
+        if message.author.id != bot.user.id:
+            await interaction.response.send_message("⚠️ そのメッセージはBotが送信したものではありません。", ephemeral=True)
+            return
+
+        await message.delete()
+        await interaction.response.send_message("✅ メッセージを削除しました。", ephemeral=True)
+
+    except discord.NotFound:
+        await interaction.response.send_message("⚠️ メッセージが見つかりませんでした。", ephemeral=True)
+    except discord.Forbidden:
+        await interaction.response.send_message("❌ メッセージの削除権限がありません。", ephemeral=True)
+    except Exception as e:
+        print(f"メッセージ削除エラー: {e}")
+        await interaction.response.send_message("❌ メッセージの削除中にエラーが発生しました。", ephemeral=True)
 
 @tree.command(name="logch", description="ログ送信先チャンネルを設定します（管理者または許可ロール限定）")
 @app_commands.describe(channel="ログを送信するチャンネル")

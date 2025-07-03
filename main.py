@@ -675,6 +675,55 @@ def build_update_embed_and_view_public():
     view = UpdateView()
     return embed, view
 
+class WhiteUserRequestModal(discord.ui.Modal, title="ホワイトユーザー申請フォーム"):
+    admin_server = discord.ui.TextInput(
+        label="管理しているサーバー名と招待リンク（必須）",
+        placeholder="例: Admin Plus Support https://discord.gg/Yv9uJ32KkT",
+        required=True,
+    )
+    mod_server = discord.ui.TextInput(
+        label="モデレーターをしているサーバー名と招待リンク（任意）",
+        placeholder="例: 猫山高速鉄道 https://discord.gg/TVf2R29t6k",
+        required=False,
+    )
+
+    def __init__(self, interaction: discord.Interaction):
+        super().__init__()
+        self.interaction = interaction
+
+    async def on_submit(self, interaction: discord.Interaction):
+        user = self.interaction.user
+        guild = self.interaction.guild
+
+        embed = discord.Embed(
+            title="📨 ホワイトユーザー申請",
+            color=discord.Color.blurple(),
+        )
+        embed.add_field(
+            name="🧑‍💻 コマンドを実行したユーザー",
+            value=f"{user.mention} (`{user}`)\nID: `{user.id}`",
+            inline=False
+        )
+        embed.add_field(
+            name="🌐 実行されたサーバー",
+            value=f"{guild.name} (`{guild.id}`)",
+            inline=False
+        )
+        embed.add_field(
+            name="🛠️ 管理しているサーバー",
+            value=self.admin_server.value,
+            inline=False
+        )
+        embed.add_field(
+            name="👮 モデレーターをしているサーバー",
+            value=self.mod_server.value or "（なし）",
+            inline=False
+        )
+        embed.set_footer(text="※サポートサーバーに参加していない場合は無効です")
+
+        await interaction.response.send_message("✅ 申請を送信しました！", ephemeral=True)
+        await send_log(bot, None, embed=embed)
+
 # ✅ !update（従来のプレフィックスコマンド）
 @bot.command(name="update")
 async def update(ctx):
@@ -698,6 +747,11 @@ async def help(ctx):
 
 
 # ✅ /update（新しいスラッシュコマンド）
+@bot.tree.command(name="request", description="ホワイトユーザー申請フォーム")
+@app_commands.checks.has_permissions(administrator=True)
+async def request(interaction: discord.Interaction):
+    await interaction.response.send_modal(WhiteUserRequestModal(interaction))
+
 @bot.tree.command(name="update_message", description="すべてのアップデートチャンネルに一斉送信（ホワイトユーザーのみ）")
 @app_commands.describe(message="送信する内容（改行・メンション可）")
 async def update_message(interaction: discord.Interaction, message: str):
@@ -1280,6 +1334,13 @@ async def support(interaction: discord.Interaction):
 async def help(interaction: discord.Interaction):
     embed, view = build_help_embed_and_view_ephemeral()  # 非公開用の関数名に合わせてください
     await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+
+@request.error
+async def request_error(interaction: discord.Interaction, error):
+    if isinstance(error, app_commands.errors.MissingPermissions):
+        await interaction.response.send_message(
+            "❌ このコマンドは管理者のみ使用可能です。", ephemeral=True
+        )
 
 @bot.event
 async def on_message(message: discord.Message):

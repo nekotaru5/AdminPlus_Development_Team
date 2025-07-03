@@ -233,14 +233,18 @@ async def can_modify_birthday(interaction: discord.Interaction, target_user_id: 
 # 🔧 ログを送る先のチャンネルID（数値）を指定
 LOG_CHANNEL_ID = 1384839728393617539  # ← 実際のチャンネルIDに置き換え
 
-async def send_log(bot, message: str):
-    await bot.wait_until_ready()  # Botの起動待機
+async def send_log(bot, content, *, embed: discord.Embed = None):
+    await bot.wait_until_ready()
     channel = bot.get_channel(LOG_CHANNEL_ID)
     if channel:
         try:
-            await channel.send(f"📝 ログ: {message}")
+            if embed:
+                await channel.send(content=content or None, embed=embed)
+            else:
+                await channel.send(content)
         except Exception as e:
             print(f"[ログ送信エラー] {e}")
+
 async def do_update_status():
     guild_count = len(bot.guilds)
     activity = discord.Activity(

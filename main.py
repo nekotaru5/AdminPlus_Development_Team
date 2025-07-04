@@ -104,11 +104,11 @@ def save_update_channels():
     with open("update_channel.json", "w", encoding="utf-8") as f:
         json.dump(update_channels, f, indent=4)
 
-white_users = []
+white_list = []
 
 def load_white_users():
     try:
-        with open("WhiteUser.json", "r", encoding="utf-8") as f:
+        with open("Whitelist.json", "r", encoding="utf-8") as f:
             data = json.load(f)
             if not isinstance(data, list):
                 print("WhiteUser.jsonの形式がリストではありません。初期化します。")
@@ -675,7 +675,7 @@ def build_update_embed_and_view_public():
     view = UpdateView()
     return embed, view
 
-class WhiteUserRequestModal(discord.ui.Modal, title="ホワイトユーザー申請フォーム"):
+class WhiteUserRequestModal(discord.ui.Modal, title="ホワイトリスト申請フォーム"):
     admin_server = discord.ui.TextInput(
         label="管理しているサーバー名と招待リンク（必須）",
         placeholder="例: Admin Plus Support https://discord.gg/Yv9uJ32KkT",
@@ -747,7 +747,7 @@ async def help(ctx):
 
 
 # ✅ /update（新しいスラッシュコマンド）
-@bot.tree.command(name="request", description="ホワイトユーザー申請フォーム")
+@bot.tree.command(name="request", description="ホワイトリスト申請フォーム")
 @app_commands.checks.has_permissions(administrator=True)
 async def request(interaction: discord.Interaction):
     await interaction.response.send_modal(WhiteUserRequestModal(interaction))
@@ -758,7 +758,7 @@ async def update_message(interaction: discord.Interaction, message: str):
     # ホワイトユーザー制限
     if str(interaction.user.id) not in map(str, white_users):
         await interaction.response.send_message(
-            "❌ あなたにはこのコマンドを実行する権限がありません（ホワイトユーザー専用）。",
+            "❌ あなたにはこのコマンドを実行する権限がありません（Admin plus 管理者専用）。",
             ephemeral=True
         )
         return
@@ -869,7 +869,7 @@ async def set_report_channel(interaction: discord.Interaction, channel: discord.
 @bot.tree.command(name="dm", description="指定したユーザーにDMを送信します。")
 @app_commands.describe(user="DMを送る相手", message="送信するメッセージ")
 async def dm(interaction: discord.Interaction, user: discord.User, message: str):
-    if not white_users:
+    if not white_list:
         await interaction.response.send_message("⚠️ ホワイトリストがロードされていません。", ephemeral=True)
         return
 

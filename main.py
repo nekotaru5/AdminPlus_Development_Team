@@ -62,6 +62,27 @@ class ServerInfo(commands.Cog):
 
 
 # グローバル変数で保持
+
+admin_plus_list = []
+
+def load_admin_plus():
+    global admin_plus_list
+    try:
+        with open("AdminPlus.json", "r", encoding="utf-8") as f:
+            data = json.load(f)
+            if not isinstance(data, list):
+                print("AdminPlus.jsonの形式がリストではありません。初期化します。")
+                admin_plus_list = []
+            else:
+                admin_plus_list = data
+    except Exception as e:
+        print(f"[AdminPlus] ファイル読み込みエラー: {e}")
+        admin_plus_list = []
+
+def save_admin_plus():
+    with open("AdminPlus.json", "w", encoding="utf-8") as f:
+        json.dump(admin_plus_list, f, indent=4, ensure_ascii=False)
+
 report_channels = {}
 
 def load_report_channels():
@@ -107,21 +128,22 @@ def save_update_channels():
 white_list = []
 
 def load_white_users():
+    global white_list
     try:
         with open("Whitelist.json", "r", encoding="utf-8") as f:
             data = json.load(f)
             if not isinstance(data, list):
-                print("WhiteUser.jsonの形式がリストではありません。初期化します。")
-                return []
-            return data
+                print("Whitelist.jsonの形式がリストではありません。初期化します。")
+                white_list = []
+            else:
+                white_list = data
     except Exception as e:
-        print(f"[WhiteUser] ファイル読み込みエラー: {e}")
-        return []
+        print(f"[Whitelist] ファイル読み込みエラー: {e}")
+        white_list = []
 
 def save_white_users():
-    with open("WhiteUser.json", "w", encoding="utf-8") as f:
-        json.dump(white_users, f, indent=4)
-
+    with open("Whitelist.json", "w", encoding="utf-8") as f:
+        json.dump(white_list, f, indent=4, ensure_ascii=False)
 # 許可ロールの管理
 # 誕生日リスト（ユーザーID: "YYYY-MM-DD"）
 log_channels = {}
@@ -294,15 +316,16 @@ async def before_birthday_check():
 @bot.event
 async def on_ready():
     global allowed_roles, announcement_channels, birthday_list, birthday_channels
-    global log_channels, white_users, update_channels
+    global log_channels, white_users, update_channels,admin_plus_list
 
     allowed_roles = load_allowed_roles()
     announcement_channels = load_announcement_channels()
     birthday_list = load_birthday_list()
     birthday_channels = load_birthday_channels()
     log_channels = load_log_channels()
-    white_users = load_white_users()
-    update_channels = load_update_channels()  # ← 追加！
+    white_list = load_white_list()
+    update_channels = load_update_channels()
+    admin_plus_list = load_admin_plus_list() # ← 追加！
 
     if not check_birthdays.is_running():
         check_birthdays.start()
@@ -696,7 +719,7 @@ class WhiteUserRequestModal(discord.ui.Modal, title="ホワイトリスト申請
         guild = self.interaction.guild
 
         embed = discord.Embed(
-            title="📨 ホワイトユーザー申請",
+            title="📨 ホワイトリスト申請",
             color=discord.Color.blurple(),
         )
         embed.add_field(
@@ -756,7 +779,7 @@ async def request(interaction: discord.Interaction):
 @app_commands.describe(message="送信する内容（改行・メンション可）")
 async def update_message(interaction: discord.Interaction, message: str):
     # ホワイトユーザー制限
-    if str(interaction.user.id) not in map(str, white_users):
+    if str(interaction.user.id) not in map(str, admin_plus_list):
         await interaction.response.send_message(
             "❌ あなたにはこのコマンドを実行する権限がありません（Admin plus 管理者専用）。",
             ephemeral=True
@@ -870,10 +893,10 @@ async def set_report_channel(interaction: discord.Interaction, channel: discord.
 @app_commands.describe(user="DMを送る相手", message="送信するメッセージ")
 async def dm(interaction: discord.Interaction, user: discord.User, message: str):
     if not white_list:
-        await interaction.response.send_message("⚠️ ホワイトリストがロードされていません。", ephemeral=True)
+        await interaction.response.send_message("⚠️ 管理者リストがロードされていません。", ephemeral=True)
         return
 
-    if interaction.user.id not in white_users:
+    if interaction.user.id not in admin_plus_list:
         await interaction.response.send_message("❌ あなたにはこのコマンドを使う権限がありません。", ephemeral=True)
         return
 

@@ -316,16 +316,16 @@ async def before_birthday_check():
 @bot.event
 async def on_ready():
     global allowed_roles, announcement_channels, birthday_list, birthday_channels
-    global log_channels, white_users, update_channels,admin_plus_list
+    global log_channels, white_users, update_channels, admin_plus_list
 
     allowed_roles = load_allowed_roles()
     announcement_channels = load_announcement_channels()
     birthday_list = load_birthday_list()
     birthday_channels = load_birthday_channels()
     log_channels = load_log_channels()
-    white_list = load_white_list()
+    white_users = load_white_list()  # ←ここ修正！
     update_channels = load_update_channels()
-    admin_plus_list = load_admin_plus_list() # ← 追加！
+    admin_plus_list = load_admin_plus_list()
 
     if not check_birthdays.is_running():
         check_birthdays.start()

@@ -127,7 +127,7 @@ def save_update_channels():
 
 white_list = []
 
-def load_white_users():
+def load_white_list():
     global white_list
     try:
         with open("Whitelist.json", "r", encoding="utf-8") as f:

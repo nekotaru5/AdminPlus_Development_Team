@@ -896,7 +896,7 @@ async def dm(interaction: discord.Interaction, user: discord.User, message: str)
         await interaction.response.send_message("⚠️ 管理者リストがロードされていません。", ephemeral=True)
         return
 
-    if interaction.user.id not in admin_plus_list:
+    if interaction.user.id not in white_list:
         await interaction.response.send_message("❌ あなたにはこのコマンドを使う権限がありません。", ephemeral=True)
         return
 

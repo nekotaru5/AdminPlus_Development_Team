@@ -125,25 +125,23 @@ def save_update_channels():
     with open("update_channel.json", "w", encoding="utf-8") as f:
         json.dump(update_channels, f, indent=4)
 
-white_list = []
+white_users = []
 
-def load_white_list():
-    global white_list
+def load_white_users():
     try:
-        with open("Whitelist.json", "r", encoding="utf-8") as f:
+        with open("WhiteUser.json", "r", encoding="utf-8") as f:
             data = json.load(f)
             if not isinstance(data, list):
-                print("Whitelist.jsonの形式がリストではありません。初期化します。")
-                white_list = []
-            else:
-                white_list = data
+                print("WhiteUser.jsonの形式がリストではありません。初期化します。")
+                return []
+            return data
     except Exception as e:
-        print(f"[Whitelist] ファイル読み込みエラー: {e}")
-        white_list = []
+        print(f"[WhiteUser] ファイル読み込みエラー: {e}")
+        return []
 
 def save_white_users():
-    with open("Whitelist.json", "w", encoding="utf-8") as f:
-        json.dump(white_list, f, indent=4, ensure_ascii=False)
+    with open("WhiteUser.json", "w", encoding="utf-8") as f:
+        json.dump(white_users, f, indent=4)
 # 許可ロールの管理
 # 誕生日リスト（ユーザーID: "YYYY-MM-DD"）
 log_channels = {}

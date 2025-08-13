@@ -892,11 +892,11 @@ async def set_report_channel(interaction: discord.Interaction, channel: discord.
 @bot.tree.command(name="dm", description="指定したユーザーにDMを送信します。")
 @app_commands.describe(user="DMを送る相手", message="送信するメッセージ")
 async def dm(interaction: discord.Interaction, user: discord.User, message: str):
-    if not white_list:
-        await interaction.response.send_message("⚠️ 管理者リストがロードされていません。", ephemeral=True)
+    if not white_users:
+        await interaction.response.send_message("⚠️ ホワイトリストがロードされていません。", ephemeral=True)
         return
 
-    if interaction.user.id not in white_list:
+    if interaction.user.id not in white_users:
         await interaction.response.send_message("❌ あなたにはこのコマンドを使う権限がありません。", ephemeral=True)
         return
 
